@@ -13,13 +13,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-use-tab-visibility": "^1.0.8",
-    "use-media-query-react": "^1.0.8",
     "use-media-query-react-ts": "^1.0.8",
-    "use-media-query-react1": "^1.0.8",
-    "use-tab-vis": "^1.0.8",
-    "use-tab-vis1": "^1.0.8",
-    "use-tab-visibility": "^1.0.9",
-    "use-tab-visibility-react": "^1.0.8"
   },
   "devDependencies": {
     "@types/react": "^18.2.14",

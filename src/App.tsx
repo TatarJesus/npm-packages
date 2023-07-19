@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { useTabVisibility } from "react-use-tab-visibility";
-import { useMediaQuery } from "use-media-query-react-ts";
-import MediaQuery from "use-media-query-react-ts";
+import { useTabVisibility } from "react-ts-use-tab-visibility";
+import { useMediaQuery } from "react-ts-use-media-query";
+import MediaQuery from "react-ts-use-media-query";
 
 export const App = () => {
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1224px)" });
@@ -10,10 +10,20 @@ export const App = () => {
   const isPortrait = useMediaQuery({ query: "(orientation: portrait)" });
   const isRetina = useMediaQuery({ query: "(min-resolution: 2dppx)" });
 
-  const { count, visible, handleVisibility } = useTabVisibility();
+  const { count, visible, onVisibilityChange } = useTabVisibility();
 
   useEffect(() => {
-    handleVisibility();
+    onVisibilityChange((isVisible: boolean) => {
+      console.log("first handler", isVisible);
+    });
+
+    const unsubscribeSecondHandler = onVisibilityChange(
+      (isVisible: boolean) => {
+        console.log("second handler", isVisible);
+      }
+    );
+
+    setTimeout(() => unsubscribeSecondHandler, 5000);
   }, []);
 
   return (

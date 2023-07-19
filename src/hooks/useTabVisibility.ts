@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 const getIsVisible = (): boolean => {
   if (typeof document === "undefined") {
@@ -11,32 +11,32 @@ export const useTabVisibility = () => {
   const [count, setCount] = useState(0);
   const [visible, setVisible] = useState(getIsVisible());
 
-  const handleVisibility = useCallback(() => {
-    setVisible(getIsVisible());
-    check();
-  }, [setVisible]);
+  const onVisibilityChange = (callback: (visible: boolean) => void) => {
+    callback(visible);
+    setCount((count: number) => count + 1);
+  };
 
   const check = () => {
-    if (window?.document.hidden === true) {
+    const vis = getIsVisible();
+    if (!vis) {
       setCount((count: number) => count + 1);
     }
-    setVisible(!document.hidden);
+    setVisible(vis);
   };
 
   useEffect(() => {
     window?.document.addEventListener(
       "visibilitychange",
-      handleVisibility,
-      false
+      check
     );
 
     return () =>
       window?.document.removeEventListener(
         "visibilitychange",
-        handleVisibility
+        check
       );
-  }, [handleVisibility]);
+  }, []);
 
-  return { count, visible, handleVisibility };
+  return { count, visible, onVisibilityChange };
 };
 

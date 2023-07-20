@@ -1,42 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const getIsVisible = (): boolean => {
-  if (typeof document === "undefined") {
-    return true;
-  }
-  return !document.hidden;
-};
+interface Reftype {
+  id: number;
+  callback: (visibility: boolean) => void;
+}
 
 export const useTabVisibility = () => {
   const [count, setCount] = useState(0);
-  const [visible, setVisible] = useState(getIsVisible());
+  const [visible, setVisible] = useState(!document.hidden);
+  const list = useRef<Reftype[]>([]);
 
-  const onVisibilityChange = (callback: (visible: boolean) => void) => {
-    callback(visible);
-    setCount((count: number) => count + 1);
+  const onVisibilityChange = (
+    callback: (visible: boolean) => void
+  ): (() => void) => {
+    const id = list.current[list.current.length - 1]?.id ?? 0;
+    list.current.push({ id: id + 1, callback });
+    return () => {
+      list.current = list.current.filter((item) => item.id !== id + 1);
+    };
   };
 
   const check = () => {
-    const vis = getIsVisible();
-    if (!vis) {
-      setCount((count: number) => count + 1);
-    }
-    setVisible(vis);
+    if (document.hidden) setCount((count) => count + 1);
+    setVisible(!document.hidden);
+    list.current.forEach(({ callback }) => callback(!document.hidden));
   };
 
   useEffect(() => {
-    window?.document.addEventListener(
-      "visibilitychange",
-      check
-    );
+    document.addEventListener("visibilitychange", check);
 
-    return () =>
-      window?.document.removeEventListener(
-        "visibilitychange",
-        check
-      );
+    return () => document.removeEventListener("visibilitychange", check);
   }, []);
 
   return { count, visible, onVisibilityChange };
 };
-

@@ -1,10 +1,7 @@
 import { useEffect } from "react";
-// import { useTabVisibility } from "react-ts-use-tab-visibility";
-// import { useMediaQuery } from "react-ts-use-media-query";
-// import MediaQuery from "react-ts-use-media-query";
-import MediaQuery from "./components/MediaQuery";
-import { useMediaQuery } from "./components/MediaQuery";
-import { useTabVisibility } from "./hooks/useTabVisibility";
+import MediaQuery from "react-ts-media-query";
+import { useMediaQuery } from "react-ts-media-query";
+import { useTabVisibility } from "react-ts-tab-visibility";
 
 export const App = () => {
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1224px)" });
@@ -20,7 +17,9 @@ export const App = () => {
       console.log("first handler", isVisible);
     });
 
-    setTimeout(() => {one()}, 1000);
+    setTimeout(() => {
+      one();
+    }, 1000);
 
     const unsubscribeSecondHandler = onVisibilityChange(
       (isVisible: boolean) => {
@@ -28,15 +27,17 @@ export const App = () => {
       }
     );
 
-    setTimeout(() => {unsubscribeSecondHandler()}, 5000);
+    setTimeout(() => {
+      unsubscribeSecondHandler();
+    }, 5000);
 
-    const unsubscribeThreeHandler = onVisibilityChange(
-      (isVisible: boolean) => {
-        console.log("three handler", isVisible);
-      }
-    );
+    const unsubscribeThreeHandler = onVisibilityChange((isVisible: boolean) => {
+      console.log("three handler", isVisible);
+    });
 
-    setTimeout(() => {unsubscribeThreeHandler()}, 3000);
+    setTimeout(() => {
+      unsubscribeThreeHandler();
+    }, 3000);
   }, []);
 
   return (

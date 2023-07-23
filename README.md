@@ -1,14 +1,14 @@
 # npm-packages
 
 Look the site:
-https://qyc2jx-5173.csb.app/
+https://w5n45g-5173.csb.app/
 
 Use npm packages:
 1) Media Query
 ```js
-npm i react-ts-use-media-query
+npm i react-ts-media-query
 ```
 2) Document Visibility
 ```js
-npm i react-ts-use-tab-visibility
+npm i react-ts-tab-visibility
 ```

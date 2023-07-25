@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import MediaQuery from "react-ts-media-query";
-import { useMediaQuery } from "react-ts-media-query";
-import { useTabVisibility } from "react-ts-tab-visibility";
+
+import MediaQuery from "media-query-react-ts";
+import { useMediaQuery } from "media-query-react-ts";
+import { useTabVisibility } from "tab-visibility-react-ts";
 
 export const App = () => {
   const isDesktopOrLaptop = useMediaQuery({ query: "(min-width: 1224px)" });
@@ -42,11 +43,11 @@ export const App = () => {
 
   return (
     <div className="container">
-      <div className="tab-visibility">
+      <div className="mini-container">
         <span>Вы покинули страницу: {count} раз</span>
         <span>Вкладка активна? {visible ? "Да" : "Нет"}</span>
       </div>
-      <div className="media-query">
+      <div className="mini-container">
         <h2>Device Test!</h2>
         {isDesktopOrLaptop && <p>You are a desktop or laptop</p>}
         {isBigScreen && <p>You have a huge screen</p>}
@@ -54,7 +55,7 @@ export const App = () => {
         <p>Your are in {isPortrait ? "portrait" : "landscape"} orientation</p>
         {isRetina && <p>You are retina</p>}
       </div>
-      <div className="media-query">
+      <div className="mini-container">
         <h2>Device Test!</h2>
         <MediaQuery minWidth={1224} maxWidth={2000}>
           <p>You are a desktop or laptop</p>
@@ -63,8 +64,8 @@ export const App = () => {
           </MediaQuery>
         </MediaQuery>
         <MediaQuery minResolution={2}>
-          {(result: boolean) =>
-            result ? <p>You are retina</p> : <p>You are not retina</p>
+          {(matches: boolean) =>
+            matches ? <p>You are retina</p> : <p>You are not retina</p>
           }
         </MediaQuery>
       </div>

@@ -11,7 +11,7 @@ type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
 type Resolution = `${number}dppx`;
 
 interface OptionsMediaQuery {
-  orientation?: string;
+  orientation?: "portrait" | "landscape";
   minResolution?: number | Resolution;
   maxResolution?: number | Resolution;
   minWidth?: number;
@@ -24,8 +24,12 @@ type ChildrenMediaQuery = {
   children: ReactNode | ((result: boolean) => ReactNode);
 } & RequireAtLeastOne<OptionsMediaQuery>;
 
-const camelCase = (camel: string) => {
-  const camelCase = camel
+interface QueryMedia {
+  query: string;
+}
+
+const camelCaseToRegular = (key: string) => {
+  const camelCase = key
     .replace(/([a-z])([A-Z])/g, "$1 $2")
     .toLowerCase()
     .replace(/\s/g, "-");
@@ -35,45 +39,58 @@ const camelCase = (camel: string) => {
 const transformationsInfo = (props: OptionsMediaQuery) => {
   return Object.entries(props)
     .map(([key, value]) => {
+      const valueFromKey = String(value);
       switch (key) {
         case "orientation":
-          return "(orientation: " + String(value) + "px)";
+          return `(orientation: ${valueFromKey})`;
         case "minWidth":
         case "maxWidth":
         case "minHeight":
         case "maxHeight":
-          return "(" + camelCase(key) + ": " + String(value) + "px)";
+          return `(${camelCaseToRegular(key)}: ${valueFromKey}px)`;
         case "minResolution":
         case "maxResolution":
-          return typeof value === "number"
-            ? "(" + camelCase(key) + ": " + String(value) + "ddpx)"
-            : "(" + camelCase(key) + ": " + String(value) + ")";
-        default:
-          return "";
+          return `(${camelCaseToRegular(key)}: ${
+            typeof value === "number" ? valueFromKey + "dppx" : valueFromKey
+          })`;
       }
     })
     .join(" and ");
 };
 
 const MediaQuery = ({ children, ...props }: ChildrenMediaQuery) => {
-  const result = useMediaQuery({ query: transformationsInfo(props) });
+  const matches = useMediaQuery({ query: transformationsInfo(props) });
   return typeof children === "function" ? (
-    <>{children(result)}</>
-  ) : result ? (
+    <>{children(matches)}</>
+  ) : matches ? (
     <>{children}</>
   ) : null;
 };
 
 export default MediaQuery;
 
-export const useMediaQuery = (dimension: { query: string }) => {
-  const [result, setResult] = useState(
-    window.matchMedia(dimension.query).matches
-  );
+export const useMediaQuery = ({ query }: QueryMedia) => {
+  const getMatches = (query: string): boolean => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  };
+
+  const [matches, setMatches] = useState(getMatches(query));
+
+  const getInitialState = () => {
+    setMatches(getMatches(query));
+  };
 
   useEffect(() => {
-    setResult(window.matchMedia(dimension.query).matches);
-  }, [dimension.query]);
+    const queryMedia = window.matchMedia(query);
 
-  return result;
+    getInitialState();
+    queryMedia.addEventListener("change", getInitialState);
+
+    return () => queryMedia.removeEventListener("change", getInitialState);
+  }, [query]);
+
+  return matches;
 };

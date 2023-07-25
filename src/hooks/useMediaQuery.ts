@@ -5,27 +5,24 @@ interface QueryMedia {
 }
 
 export const useMediaQuery = ({ query }: QueryMedia) => {
-  const getMatches = (query: string): boolean => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia(query).matches;
-    }
-    return false;
-  };
-
-  const [matches, setMatches] = useState(getMatches(query));
-
-  const getInitialState = () => {
-    setMatches(getMatches(query));
-  };
+  const [matches, setMatches] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false
+  );
 
   useEffect(() => {
     const queryMedia = window.matchMedia(query);
 
-    getInitialState();
-    queryMedia.addEventListener("change", getInitialState);
+    setMatches(queryMedia.matches);
 
-    return () => queryMedia.removeEventListener("change", getInitialState);
+    queryMedia.addEventListener("change", changeHandler);
+
+    return () => queryMedia.removeEventListener("change", changeHandler);
   }, [query]);
+
+  const changeHandler = () => {
+    const queryMedia = window.matchMedia(query);
+    setMatches(queryMedia.matches);
+  };
 
   return matches;
 };

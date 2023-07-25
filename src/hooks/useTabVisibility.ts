@@ -30,17 +30,19 @@ export const useTabVisibility = () => {
   };
 
   useEffect(() => {
+    const visibilityChangeHandler = () => {
+      if (document.hidden) setCount((currentCount) => currentCount + 1);
+      setVisible(!document.hidden);
+      callbackList.current.forEach(({ callback }) =>
+        callback(!document.hidden)
+      );
+    };
+
     document.addEventListener("visibilitychange", visibilityChangeHandler);
 
     return () =>
       document.removeEventListener("visibilitychange", visibilityChangeHandler);
   }, []);
-
-  const visibilityChangeHandler = () => {
-    if (document.hidden) setCount((currentCount) => currentCount + 1);
-    setVisible(!document.hidden);
-    callbackList.current.forEach(({ callback }) => callback(!document.hidden));
-  };
 
   return { count, visible, onVisibilityChange };
 };

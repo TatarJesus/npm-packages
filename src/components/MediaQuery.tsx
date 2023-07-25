@@ -75,6 +75,10 @@ export const useMediaQuery = ({ query }: QueryMedia) => {
   );
 
   useEffect(() => {
+    const changeHandler = (event: MediaQueryListEvent) => {
+      setMatches(event.matches);
+    };
+
     const queryMedia = window.matchMedia(query);
 
     setMatches(queryMedia.matches);
@@ -83,11 +87,6 @@ export const useMediaQuery = ({ query }: QueryMedia) => {
 
     return () => queryMedia.removeEventListener("change", changeHandler);
   }, [query]);
-
-  const changeHandler = () => {
-    const queryMedia = window.matchMedia(query);
-    setMatches(queryMedia.matches);
-  };
 
   return matches;
 };
